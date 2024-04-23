@@ -14,9 +14,9 @@ import {
   faComment,
 } from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
-import { GitHubContext } from '../../contexts/github-context'
+import { GitHubContext, GitHubIssue } from '../../contexts/github-context'
 import { useContextSelector } from 'use-context-selector'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Markdown from 'react-markdown'
 import { formatDistanceToNow } from 'date-fns'
@@ -24,15 +24,26 @@ import { ptBR } from 'date-fns/locale'
 
 export function PostPage() {
   const { number } = useParams()
+  const [gitHubIssue, setGitHubIssue] = useState<GitHubIssue | undefined>()
 
-  const [fetchGitHubIssue, gitHubIssue] = useContextSelector(
-    GitHubContext,
-    (context) => [context.fetchGitHubIssue, context.gitHubIssue],
-  )
+  const [fetchGitHubIssue] = useContextSelector(GitHubContext, (context) => [
+    context.fetchGitHubIssue,
+  ])
 
   useEffect(() => {
-    fetchGitHubIssue(number!)
+    try {
+      fetchGitHubIssue(number!).then((data) => {
+        console.log(data)
+        setGitHubIssue(data)
+      })
+    } catch (error) {
+      console.log(error)
+    }
   }, [])
+
+  if (!gitHubIssue) {
+    return
+  }
 
   return (
     <PostPageContainer>
@@ -46,30 +57,29 @@ export function PostPage() {
             GitHub <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
           </Link>
         </Links>
-        <h1>{gitHubIssue.title}</h1>
+        <h1>{gitHubIssue?.title}</h1>
         <Info>
           <div>
             <FontAwesomeIcon icon={faGithub} />
-            <span>{gitHubIssue?.user?.login}</span>
+            <span>{gitHubIssue?.user.login}</span>
           </div>
           <div>
             <FontAwesomeIcon icon={faCalendar} />
             <span>
-              {gitHubIssue.created_at &&
-                formatDistanceToNow(new Date(gitHubIssue.created_at), {
-                  addSuffix: true,
-                  locale: ptBR,
-                })}
+              {formatDistanceToNow(new Date(gitHubIssue.created_at), {
+                addSuffix: true,
+                locale: ptBR,
+              })}
             </span>
           </div>
           <div>
             <FontAwesomeIcon icon={faComment} />
-            <span>{gitHubIssue.comments} comentários</span>
+            <span>{gitHubIssue?.comments} comentários</span>
           </div>
         </Info>
       </PostInfoContainer>
       <PostContent>
-        <Markdown>{gitHubIssue.body}</Markdown>
+        <Markdown>{gitHubIssue?.body}</Markdown>
       </PostContent>
     </PostPageContainer>
   )

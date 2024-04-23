@@ -12,7 +12,7 @@ interface GitHubUser {
   url: string
 }
 
-interface GitHubIssue {
+export interface GitHubIssue {
   url: string
   repository_url: string
   labels_url: string
@@ -50,10 +50,9 @@ interface GitHubProviderProps {
 interface GitHubContextType {
   gitHubUser: GitHubUser
   gitHubIssues: GitHubIssue[]
-  gitHubIssue: GitHubIssue
   fetchGitHubUser: () => void
   fetchGitHubIssues: (query?: string) => void
-  fetchGitHubIssue: (issueNumber: string) => void
+  fetchGitHubIssue: (issueNumber: string) => Promise<GitHubIssue>
 }
 
 export const GitHubContext = createContext({} as GitHubContextType)
@@ -64,7 +63,6 @@ export function GitHubProvider({ children }: GitHubProviderProps) {
 
   const [gitHubUser, setGitHubUser] = useState({} as GitHubUser)
   const [gitHubIssues, setGitHubIssues] = useState<GitHubIssue[]>([])
-  const [gitHubIssue, setGitHubIssue] = useState({} as GitHubIssue)
 
   const fetchGitHubUser = useCallback(async () => {
     const response = await api.get(`users/${USER}`)
@@ -89,7 +87,7 @@ export function GitHubProvider({ children }: GitHubProviderProps) {
       `repos/${USER}/${REPO}/issues/${issueNumber}`,
     )
 
-    setGitHubIssue(response.data)
+    return response.data
   }, [])
 
   useEffect(() => {
@@ -102,7 +100,6 @@ export function GitHubProvider({ children }: GitHubProviderProps) {
       value={{
         gitHubUser,
         gitHubIssues,
-        gitHubIssue,
         fetchGitHubUser,
         fetchGitHubIssues,
         fetchGitHubIssue,
