@@ -1,74 +1,31 @@
 import { Post, PostsContainer } from './styles'
+import { GitHubContext } from '../../../../contexts/github-context'
+import { formatDistanceToNow } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+import Markdown from 'react-markdown'
+import { useContextSelector } from 'use-context-selector'
 
 export function Posts() {
+  const [gitHubIssues] = useContextSelector(GitHubContext, (context) => [
+    context.gitHubIssues,
+  ])
+
   return (
     <PostsContainer>
-      <Post to="/post">
-        <header>
-          <h3>JavaScript data types and data structures</h3>
-          <span>Há 1 dia</span>
-        </header>
-        <p>
-          Programming languages all have built-in data structures, but these
-          often differ from one language to another. This article attempts to
-          list the built-in data structures available in...
-        </p>
-      </Post>
-      <Post to="/post">
-        <header>
-          <h3>JavaScript data types and data structures</h3>
-          <span>Há 1 dia</span>
-        </header>
-        <p>
-          Programming languages all have built-in data structures, but these
-          often differ from one language to another. This article attempts to
-          list the built-in data structures available in...
-        </p>
-      </Post>
-      <Post to="/post">
-        <header>
-          <h3>JavaScript data types and data structures</h3>
-          <span>Há 1 dia</span>
-        </header>
-        <p>
-          Programming languages all have built-in data structures, but these
-          often differ from one language to another. This article attempts to
-          list the built-in data structures available in...
-        </p>
-      </Post>
-      <Post to="/post">
-        <header>
-          <h3>JavaScript data types and data structures</h3>
-          <span>Há 1 dia</span>
-        </header>
-        <p>
-          Programming languages all have built-in data structures, but these
-          often differ from one language to another. This article attempts to
-          list the built-in data structures available in...
-        </p>
-      </Post>
-      <Post to="/post">
-        <header>
-          <h3>JavaScript data types and data structures</h3>
-          <span>Há 1 dia</span>
-        </header>
-        <p>
-          Programming languages all have built-in data structures, but these
-          often differ from one language to another. This article attempts to
-          list the built-in data structures available in...
-        </p>
-      </Post>
-      <Post to="/post">
-        <header>
-          <h3>JavaScript data types and data structures</h3>
-          <span>Há 1 dia</span>
-        </header>
-        <p>
-          Programming languages all have built-in data structures, but these
-          often differ from one language to another. This article attempts to
-          list the built-in data structures available in...
-        </p>
-      </Post>
+      {gitHubIssues.map((gitHubIssue) => (
+        <Post to={`/post/${gitHubIssue.number}`} key={gitHubIssue.number}>
+          <header>
+            <h3>{gitHubIssue.title}</h3>
+            <span>
+              {formatDistanceToNow(new Date(gitHubIssue.created_at), {
+                addSuffix: true,
+                locale: ptBR,
+              })}
+            </span>
+          </header>
+          <Markdown>{`${gitHubIssue.body.substring(0, 140)}...`}</Markdown>
+        </Post>
+      ))}
     </PostsContainer>
   )
 }

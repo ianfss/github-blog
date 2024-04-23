@@ -7,6 +7,10 @@ import {
   faComment,
 } from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
+import { GitHubContext } from '../../../../contexts/github-context'
+import { formatDistanceToNow } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+import { useContextSelector } from 'use-context-selector'
 
 export function PostInfo() {
   return (
@@ -16,23 +20,27 @@ export function PostInfo() {
           <FontAwesomeIcon icon={faChevronLeft} /> Voltar
         </Link>
 
-        <Link href="" target="_blank">
+        <Link href={gitHubIssue.html_url} target="_blank">
           GitHub <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
         </Link>
       </Links>
-      <h1>JavaScript data types and data structures</h1>
+      <h1>{gitHubIssue.title}</h1>
       <Info>
         <div>
           <FontAwesomeIcon icon={faGithub} />
-          <span>cameronwll</span>
+          <span>{gitHubUser.login}</span>
         </div>
         <div>
           <FontAwesomeIcon icon={faCalendar} />
-          <span>Há 1 dia</span>
+          <span>{gitHubIssue.created_at}</span>
+          {/* <span>formatDistanceToNow(new Date(gitHubIssue.created_at), {
+              addSuffix: true,
+              locale: ptBR,
+            })</span> */}
         </div>
         <div>
           <FontAwesomeIcon icon={faComment} />
-          <span>5 comentários</span>
+          <span>{gitHubIssue.comments} comentários</span>
         </div>
       </Info>
     </PostInfoContainer>

@@ -17,6 +17,8 @@ export const ProfileContainer = styled.section`
     flex-direction: column;
     justify-content: space-between;
 
+    flex: 1;
+
     p {
       line-height: 160%;
 
